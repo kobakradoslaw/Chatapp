@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -29,12 +30,12 @@ public class MainActivity extends AppCompatActivity
 
 
     private static final int RC_SIGN_IN = 123;
-    private static String[] details = new String[2];
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logIn();
-        details = Database.GetUserInfo();
+        Database.updateCurrentUser();
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -45,15 +46,15 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         View hView = navigationView.getHeaderView(0);
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            TextView nav_user_name = (TextView) hView.findViewById(R.id.nav_user_name);
-            nav_user_name.setText(details[0]);
-            TextView nav_user_email = (TextView) hView.findViewById(R.id.nav_user_email);
-            nav_user_email.setText(details[1]);
-            ImageView nav_image = (ImageView) hView.findViewById(R.id.nav_user_image);
-            //Glide.with(this).load(Database.GetUserImage()).into(nav_image);
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) { //TODO: Dodać odświeżanie przed wyświetleniem
+            TextView nav_user_name = hView.findViewById(R.id.nav_user_name);
+            nav_user_name.setText(Database.getUserDisplayName());
+            TextView nav_user_email = hView.findViewById(R.id.nav_user_email);
+            nav_user_email.setText(Database.getUserEmail());
+            ImageView nav_image = hView.findViewById(R.id.nav_user_image);
+            Glide.with(this).load(Database.getUserPhoto()).into(nav_image);
         }
         navigationView.setNavigationItemSelectedListener(this);
     }

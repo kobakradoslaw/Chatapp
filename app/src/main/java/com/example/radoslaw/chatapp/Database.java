@@ -1,5 +1,6 @@
 package com.example.radoslaw.chatapp;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -18,13 +19,17 @@ import java.util.Map;
  * Created by Radoslaw on 2017-10-20.
  */
 
-public class Database {
+public class Database { //TODO: Pobierać informacje raz, zapisywać do zmiennych i odwoływać sie do zmiennych.
 
     private static final String TAG = "Baza danych TEST" ;
     static FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-   public static Map<String,Integer> licz = new HashMap<>();
+    public static Map<String,Integer> licz = new HashMap<>();
 
+
+    private static String userDisplayName;
+    private static String userEmail;
+    private static Uri userPhoto;
 
     public static void get(){
         licz.put("jeden",1);
@@ -62,17 +67,41 @@ public class Database {
             }
         });
     }
-    static public String[]  GetUserInfo(){
+
+    /**
+     * Metoda do zapisania danych użytkownika(podanych przy rejestracji) do zmiennych
+      */
+    public static void updateCurrentUser() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            // Name, email address
-            String name = user.getDisplayName();
-            String email = user.getEmail();
-            String uid = user.getUid();
-            String[] details = {name,email,uid};
-            return details;
+            userDisplayName = user.getDisplayName();
+            userEmail = user.getEmail();
+            userPhoto = user.getPhotoUrl();
         }
-        return null;
     }
 
+
+    public static String getUserDisplayName() {
+        return userDisplayName;
+    }
+
+    public static void setUserDisplayName(String userDisplayName) {
+        Database.userDisplayName = userDisplayName;
+    }
+
+    public static String getUserEmail() {
+        return userEmail;
+    }
+
+    public static void setUserEmail(String userEmail) {
+        Database.userEmail = userEmail;
+    }
+
+    public static Uri getUserPhoto() {
+        return userPhoto;
+    }
+
+    public static void setUserPhoto(Uri userPhoto) {
+        Database.userPhoto = userPhoto;
+    }
 }
