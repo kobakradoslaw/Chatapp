@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "656423318879",
+    "firebase_url": "https://chatapp-f846e.firebaseio.com",
+    "project_id": "chatapp-f846e",
+    "storage_bucket": "chatapp-f846e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:656423318879:android:c894407a75ba485f",
+        "android_client_info": {
+          "package_name": "com.example.radoslaw.chatapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "656423318879-cv7s4e9cdvdtr2uemuitjiuijf449s07.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.radoslaw.chatapp",
+            "certificate_hash": "cce170c9d76a791ba6947d5cd2d334c1b300f82d"
+          }
+        },
+        {
+          "client_id": "656423318879-232h9khuvv56bnut8pjkm9scd1siec1a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDh8HV10oD1ye8xTmw8lyKTYW7SNwrASQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "656423318879-232h9khuvv56bnut8pjkm9scd1siec1a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
