@@ -1,7 +1,9 @@
 package com.example.radoslaw.chatapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 /**
  * Created by Radoslaw on 2017-11-07.
@@ -13,5 +15,10 @@ public class Find extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find);
+    }
+
+    public void buttonOnClick(View v ){  //TODO: zmienić nazwę metody na bardziej opisową
+        startActivity(new Intent(getApplicationContext(), MapsActivity.class));
+
     }
 }

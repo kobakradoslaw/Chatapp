@@ -13,4 +13,5 @@
     <string name="tab_text_1">Prywatne</string>
     <string name="tab_text_2">Grupowe</string>
     <string name="todo">"TESTOWE zdjecie </string>
+    <string name="title_activity_maps">Map</string>
 </resources>
