@@ -3,6 +3,7 @@ package com.example.radoslaw.chatapp;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.View;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -29,13 +30,17 @@ import java.util.Map;
  * Created by Radoslaw on 2017-10-20.
  */
 
-public class Database { //TODO: Pobierać informacje raz, zapisywać do zmiennych i odwoływać sie do zmiennych.
+public class Database {
 
     private static final String TAG = "Baza danych TEST" ;
-    static FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public static FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private static Map<String,Object> userProfile = new HashMap<>();
+
+    private static Map<String,Object> findUserProfile = new HashMap<>();
     private static Map<String,Object> groupProfile = new HashMap<>();
+
+    private static String findUserUid;
 
     private static String userDocumentID;
     private static String groupDocumentID;
@@ -150,6 +155,7 @@ public class Database { //TODO: Pobierać informacje raz, zapisywać do zmiennyc
                                 data.put("name",userProfile.get("name"));
                                 data.put("surname",userProfile.get("surname"));
                                 data.put("mail",userProfile.get("mail"));
+                                data.put("uid",useruid);
                             db.document("groups/"+groupDocumentID+"/guides/"+useruid)
                                     .set(data,SetOptions.merge());
                             } else {
@@ -177,6 +183,7 @@ public class Database { //TODO: Pobierać informacje raz, zapisywać do zmiennyc
                                 data.put("name",userProfile.get("name"));
                                 data.put("surname",userProfile.get("surname"));
                                 data.put("mail",userProfile.get("mail"));
+                                data.put("uid",useruid);
                                 db.document("groups/"+groupDocumentID+"/users/"+useruid)
                                         .set(data,SetOptions.merge());
                             } else {
@@ -276,5 +283,21 @@ public class Database { //TODO: Pobierać informacje raz, zapisywać do zmiennyc
         Database.userPhoto = userPhoto;
     }
 
+
+    public static String getFindUserUid() {
+        return findUserUid;
+    }
+
+    public static void setFindUserUid(String findUserUid) {
+        Database.findUserUid = findUserUid;
+    }
+
+    public static Map<String, Object> getFindUserProfile() {
+        return findUserProfile;
+    }
+
+    public static void setFindUserProfile(Map<String, Object> findUserProfile) {
+        Database.findUserProfile = findUserProfile;
+    }
 
 }
