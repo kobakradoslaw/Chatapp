@@ -27,7 +27,7 @@ public class Settings extends AppCompatActivity {
     }
 
     public void leaveButtonOnClick(View v ){
-        //TODO: Dodać zawartość metody
+        Database.leaveGroup();
     }
 }
 

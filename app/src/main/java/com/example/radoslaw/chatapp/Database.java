@@ -14,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
@@ -32,8 +33,6 @@ public class Database { //TODO: Pobierać informacje raz, zapisywać do zmiennyc
 
     private static final String TAG = "Baza danych TEST" ;
     static FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-    public static Map<String,Integer> licz = new HashMap<>();
 
     private static Map<String,Object> userProfile = new HashMap<>();
     private static Map<String,Object> groupProfile = new HashMap<>();
@@ -83,6 +82,7 @@ public class Database { //TODO: Pobierać informacje raz, zapisywać do zmiennyc
         data.put("organizer", "Scoia Inc.");
         data.put("userkey", "sanki123");
         data.put("guidekey","root");
+        data.put("groupid",documentname);
         db.collection("groups").document(documentname).set(data, SetOptions.merge());
     }
 
@@ -100,6 +100,7 @@ public class Database { //TODO: Pobierać informacje raz, zapisywać do zmiennyc
                                 userProfile.putAll(document.getData());
                                 assignUserUID();
                                 getlocation(loc);
+                                getGroupData();
                             }
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -109,9 +110,8 @@ public class Database { //TODO: Pobierać informacje raz, zapisywać do zmiennyc
                 });
     }
 
-    public static void getGroupData(){ //TODO: pobieranie danych z grupy po czym??
-        db.collection("groups")
-                .whereEqualTo("mail",userEmail)
+    public static void getGroupData(){
+        db.collection("groups").whereEqualTo("name",userProfile.get("groupname"))
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -119,8 +119,8 @@ public class Database { //TODO: Pobierać informacje raz, zapisywać do zmiennyc
                         if (task.isSuccessful()) {
                             for (DocumentSnapshot document : task.getResult()) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
-                                userDocumentID = document.getId();
-                                userProfile.putAll(document.getData());
+                                groupDocumentID = document.getId();
+                                groupProfile.putAll(document.getData());
                             }
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -188,7 +188,26 @@ public class Database { //TODO: Pobierać informacje raz, zapisywać do zmiennyc
         }
     }
 
-
+    public static void leaveGroup(){
+        db.collection("groups").document(String.valueOf(userProfile.get("groupid"))).collection("users").document(useruid)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting document", e);
+                    }
+                });
+        Map<String,Object> updates = new HashMap<>();
+        updates.put("groupid", FieldValue.delete());
+        updates.put("groupname", FieldValue.delete());
+        db.collection("users").document(userDocumentID).update(updates);
+    }
 
     public static void assignUserUID(){
         Map<String, Object> data = new HashMap<>();
@@ -199,6 +218,7 @@ public class Database { //TODO: Pobierać informacje raz, zapisywać do zmiennyc
     public static void sendGroupToUserProfile(){
         Map<String, Object> data = new HashMap<>();
         data.put("groupid", groupDocumentID);
+        data.put("groupname", groupProfile.get("name"));
         db.collection("users").document(userDocumentID).set(data, SetOptions.merge());
     }
 
@@ -208,43 +228,6 @@ public class Database { //TODO: Pobierać informacje raz, zapisywać do zmiennyc
         data.put("location", a);
         Log.d(TAG, "location =====>" + a);
         db.collection("users").document(userDocumentID).set(data, SetOptions.merge());
-    }
-
-    public static void get(){
-        licz.put("jeden",1);
-        licz.put("dwa",2);
-        licz.put("trzy",3);
-
-        db.collection("testowa_kolekcja").add(licz).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-            @Override
-            public void onSuccess(DocumentReference documentReference) {
-                Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-            }
-
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w(TAG, "Error adding document", e);
-            }
-        });
-    }
-    public static void get1(){
-        licz.put("jeden",1);
-        licz.put("dwa",2);
-        licz.put("trzy",3);
-
-        db.collection("testowa_kolekcja").document("Liczydło").set(licz).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(TAG, "DocumentSnapshot added with ID:");
-            }
-
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w(TAG, "Error adding document", e);
-            }
-        });
     }
 
     /**
