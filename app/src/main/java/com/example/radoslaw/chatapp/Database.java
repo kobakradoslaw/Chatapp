@@ -36,8 +36,10 @@ public class Database { //TODO: Pobierać informacje raz, zapisywać do zmiennyc
     public static Map<String,Integer> licz = new HashMap<>();
 
     private static Map<String,Object> userProfile = new HashMap<>();
+    private static Map<String,Object> groupProfile = new HashMap<>();
 
     private static String userDocumentID;
+    private static String groupDocumentID;
     public static GeoPoint loc;
 
     //Zmienne opisujące dane z rejestracji
@@ -50,14 +52,12 @@ public class Database { //TODO: Pobierać informacje raz, zapisywać do zmiennyc
 
     public static void testPushUser(){
         userProfile.put("name","Radosław");
-        userProfile.put("surname","Kostek");
+        userProfile.put("surname","JJAJAJAJ");
         userProfile.put("sex","Male");
         userProfile.put("birth",1995);
         userProfile.put("nationality","Polish");
         userProfile.put("phoneNumber",694177999);
-        userProfile.put("mail","radek95gg@gmail.com");
-        userProfile.put("organizer","Sprzykówka");
-        userProfile.put("accomodation","All Inlusive");
+        userProfile.put("mail","radek90gg@gmail.com");
     }
 
     public static void pushUser(){
@@ -74,6 +74,16 @@ public class Database { //TODO: Pobierać informacje raz, zapisywać do zmiennyc
                 Log.w(TAG, "Error adding document", e);
             }
         });
+    }
+
+    public static void testPushGroup(){
+        String documentname = "scoiatael";
+        Map<String, Object> data = new HashMap<>();
+        data.put("name", "Whatever");
+        data.put("organizer", "Scoia Inc.");
+        data.put("userkey", "sanki123");
+        data.put("guidekey","root");
+        db.collection("groups").document(documentname).set(data, SetOptions.merge());
     }
 
     public static void assignUser(){
@@ -99,11 +109,99 @@ public class Database { //TODO: Pobierać informacje raz, zapisywać do zmiennyc
                 });
     }
 
+    public static void getGroupData(){ //TODO: pobieranie danych z grupy po czym??
+        db.collection("groups")
+                .whereEqualTo("mail",userEmail)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                userDocumentID = document.getId();
+                                userProfile.putAll(document.getData());
+                            }
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+
+                    }
+                });
+    }
+
+    public static void joinGroup(String key){ //TODO: pobieranie danych z grupy po czym??
+        if(key.endsWith("guide")) {
+            db.collection("groups")
+                    .whereEqualTo("guidekey", key)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (DocumentSnapshot document : task.getResult()) {
+                                    Log.d(TAG, document.getId() + " => " + document.getData());
+                                    groupDocumentID = document.getId();
+                                    groupProfile.putAll(document.getData());
+
+                                }
+                                sendGroupToUserProfile();
+                                Map<String, Object> data = new HashMap<>();
+                                data.put("name",userProfile.get("name"));
+                                data.put("surname",userProfile.get("surname"));
+                                data.put("mail",userProfile.get("mail"));
+                            db.document("groups/"+groupDocumentID+"/guides/"+useruid)
+                                    .set(data,SetOptions.merge());
+                            } else {
+                                Log.d(TAG, "Error getting documents: ", task.getException());
+                            }
+
+                        }
+                    });
+        } else {
+            db.collection("groups")
+                    .whereEqualTo("userkey", key)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (DocumentSnapshot document : task.getResult()) {
+                                    Log.d(TAG, document.getId() + " => " + document.getData());
+                                    groupDocumentID = document.getId();
+                                    groupProfile.putAll(document.getData());
+
+                                }
+                                sendGroupToUserProfile();
+                                Map<String, Object> data = new HashMap<>();
+                                data.put("name",userProfile.get("name"));
+                                data.put("surname",userProfile.get("surname"));
+                                data.put("mail",userProfile.get("mail"));
+                                db.document("groups/"+groupDocumentID+"/users/"+useruid)
+                                        .set(data,SetOptions.merge());
+                            } else {
+                                Log.d(TAG, "Error getting documents: ", task.getException());
+                            }
+
+                        }
+                    });
+        }
+    }
+
+
+
     public static void assignUserUID(){
         Map<String, Object> data = new HashMap<>();
         data.put("uid", useruid);
         db.collection("users").document(userDocumentID).set(data, SetOptions.merge());
     }
+
+    public static void sendGroupToUserProfile(){
+        Map<String, Object> data = new HashMap<>();
+        data.put("groupid", groupDocumentID);
+        db.collection("users").document(userDocumentID).set(data, SetOptions.merge());
+    }
+
 
     public static void getlocation(GeoPoint a){
         Map<String, GeoPoint> data = new HashMap<>();
@@ -173,6 +271,10 @@ public class Database { //TODO: Pobierać informacje raz, zapisywać do zmiennyc
 
     public static Map<String, Object> getUserProfile() {
         return userProfile;
+    }
+
+    public static Map<String, Object> getGroupProfile() {
+        return groupProfile;
     }
 
     public static String getUserEmail() {
