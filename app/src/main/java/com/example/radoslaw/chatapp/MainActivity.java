@@ -46,7 +46,9 @@ public class MainActivity extends AppCompatActivity
         logIn();
         Database.updateCurrentUser();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        Database.assignUser();
         getlocation();
+        Database.getGroupData();
         // Database.pushUser();//Wysłanie testowego użytkownika do bazy danych
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -92,6 +94,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            //Database.testPushGroup();
             Toast.makeText(this, FirebaseAuth.getInstance().getCurrentUser().toString(), Toast.LENGTH_SHORT).show();
             return true;
         } else if (id == R.id.action_log_out) {
@@ -121,7 +124,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_chat) {
             startActivity(new Intent(getApplicationContext(), Chat.class));
         } else if (id == R.id.nav_items) {
-            Database.assignUser();
+            //Database.pushUser();
+           // Database.assignUser();
         } else if (id == R.id.nav_contact) {
             startActivity(new Intent(getApplicationContext(), Contact.class));
         } else if (id == R.id.nav_settings) {

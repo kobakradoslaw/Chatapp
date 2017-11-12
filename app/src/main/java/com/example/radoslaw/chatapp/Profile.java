@@ -31,6 +31,7 @@ public class Profile extends AppCompatActivity {
         TextView profile_accomodation = findViewById(R.id.profile_accomodation);
         TextView profile_nationality = findViewById(R.id.profile_nationality);
         TextView profile_organizer = findViewById(R.id.profile_organizer);
+        TextView group_name = findViewById(R.id.profile_groupid);
 
         profile_name.setText(String.valueOf(Database.getUserProfile().get("name")));
         profile_surname.setText(String.valueOf(Database.getUserProfile().get("surname")));
@@ -38,10 +39,10 @@ public class Profile extends AppCompatActivity {
         profile_mail.setText(String.valueOf(Database.getUserProfile().get("mail")));
         profile_sex.setText(String.valueOf(Database.getUserProfile().get("sex")));
         profile_phone_number.setText(String.valueOf(Database.getUserProfile().get("surname")));
-        profile_organizer.setText(String.valueOf(Database.getUserProfile().get("organizer")));
+        profile_organizer.setText(String.valueOf(Database.getGroupProfile().get("organizer")));
         profile_accomodation.setText(String.valueOf(Database.getUserProfile().get("accomodation")));
         profile_nationality.setText(String.valueOf(Database.getUserProfile().get("nationality")));
-
+        group_name.setText(String.valueOf(Database.getGroupProfile().get("name")));
 
     }
 

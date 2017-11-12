@@ -9,6 +9,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.firestore.GeoPoint;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -40,7 +41,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        GeoPoint user = (GeoPoint) Database.getFindUserProfile().get("location");
+        LatLng usermodernized = new LatLng(user.getLatitude(),user.getLongitude());
+        mMap.addMarker(new MarkerOptions().position(usermodernized).title(String.valueOf(Database.getFindUserProfile().get("name"))+" "+ String.valueOf(Database.getFindUserProfile().get("surname"))));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(usermodernized));
     }
 }
