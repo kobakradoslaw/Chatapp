@@ -96,7 +96,8 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             //Database.testPushGroup();
-            Toast.makeText(this, FirebaseAuth.getInstance().getCurrentUser().toString(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, FirebaseAuth.getInstance().getCurrentUser().toString(), Toast.LENGTH_SHORT).show();
+            Database.sendMessageToDatabase("hahahahahah");
             return true;
         } else if (id == R.id.action_log_out) {
             AuthUI.getInstance()
@@ -125,8 +126,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_chat) {
             startActivity(new Intent(getApplicationContext(), Chat.class));
         } else if (id == R.id.nav_items) {
-            //Database.pushUser();
-           // Database.assignUser();
+            startActivity(new Intent(getApplicationContext(), Materials.class));
         } else if (id == R.id.nav_contact) {
             startActivity(new Intent(getApplicationContext(), Contact.class));
         } else if (id == R.id.nav_settings) {
