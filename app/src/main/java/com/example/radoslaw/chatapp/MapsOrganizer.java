@@ -3,7 +3,6 @@ package com.example.radoslaw.chatapp;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -12,14 +11,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.firestore.GeoPoint;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsOrganizer extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.activity_maps_organizer);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -39,16 +38,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        GeoPoint user = (GeoPoint) Database.getFindUserProfile().get("location");
-        LatLng usermodernized = new LatLng(user.getLatitude(),user.getLongitude());
-        mMap.addMarker(new MarkerOptions().position(usermodernized).title(String.valueOf(Database.getFindUserProfile().get("name"))+" "+ String.valueOf(Database.getFindUserProfile().get("surname"))));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(usermodernized));
+        GeoPoint location = (GeoPoint) Database.getGroupProfile().get("organizerloc");
+        LatLng organizer = new LatLng(location.getLatitude(),location.getLongitude());
+        mMap.addMarker(new MarkerOptions().position(organizer).title("Siedziba  "+String.valueOf(Database.getGroupProfile().get("organizer"))));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(organizer));
     }
-
-    
-
-
 }

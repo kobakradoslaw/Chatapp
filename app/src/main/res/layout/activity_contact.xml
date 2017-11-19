@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="116dp"
         android:layout_marginTop="4dp"
+        android:onClick="organizerPhoneButtonOnClick"
         app:layout_constraintStart_toEndOf="@+id/imageView7"
         app:layout_constraintTop_toTopOf="@+id/textView24"
         app:srcCompat="@drawable/ic_call" />
@@ -32,6 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="16dp"
+        android:onClick="organizerMapButtonOnClick"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@+id/imageButton11"
         app:srcCompat="@drawable/ic_location" />
@@ -134,50 +136,32 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="116dp"
+        android:onClick="guidePhoneButtonOnClick"
         app:layout_constraintStart_toEndOf="@+id/imageView4"
         app:layout_constraintTop_toTopOf="@+id/imageButton3"
         app:srcCompat="@drawable/ic_call" />
 
     <ImageButton
-        android:id="@+id/imageButton2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="28dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_location" />
-
-    <ImageButton
         android:id="@+id/imageButton3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="40dp"
         android:layout_marginStart="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton2"
+        android:layout_marginTop="28dp"
+        app:layout_constraintBottom_toTopOf="@+id/imageButton17"
         app:layout_constraintStart_toEndOf="@+id/imageButton"
-        app:layout_constraintTop_toTopOf="@+id/imageButton2"
-        app:srcCompat="@drawable/ic_textsms" />
-
-    <ImageButton
-        android:id="@+id/imageButton18"
-        android:layout_width="48dp"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="116dp"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_location" />
+        app:srcCompat="@drawable/ic_textsms" />
 
     <ImageButton
         android:id="@+id/imageButton17"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton18"
-        app:layout_constraintHorizontal_bias="1.0"
+        android:layout_marginBottom="275dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/imageButton24"
         app:layout_constraintStart_toEndOf="@+id/imageButton16"
-        app:layout_constraintTop_toTopOf="@+id/imageButton18"
+        app:layout_constraintTop_toBottomOf="@+id/imageButton3"
         app:srcCompat="@drawable/ic_textsms" />
 
     <ImageButton
@@ -185,6 +169,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="116dp"
+        android:onClick="rezidentPhoneButtonOnClick"
         app:layout_constraintStart_toEndOf="@+id/imageView9"
         app:layout_constraintTop_toTopOf="@+id/imageButton17"
         app:srcCompat="@drawable/ic_call" />
@@ -225,6 +210,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="116dp"
+        android:onClick="embassyPhoneButtonOnClick"
         app:layout_constraintStart_toEndOf="@+id/imageView10"
         app:layout_constraintTop_toTopOf="@+id/textView36"
         app:srcCompat="@drawable/ic_call" />
@@ -244,6 +230,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
+        android:onClick="embassyMapButtonOnClick"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintRight_toRightOf="parent"
@@ -254,11 +241,12 @@
     <ImageButton
         android:id="@+id/imageButton24"
         android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:layout_height="0dp"
         android:layout_marginBottom="16dp"
         android:layout_marginRight="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageButton17"
         app:srcCompat="@mipmap/ic_sos_butt" />
 
 </android.support.constraint.ConstraintLayout>

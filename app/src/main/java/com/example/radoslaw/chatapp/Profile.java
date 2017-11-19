@@ -2,6 +2,7 @@ package com.example.radoslaw.chatapp;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,7 +16,7 @@ public class Profile extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        ImageView profileImage = findViewById(R.id.profile_image);      //TODO: Stworzyć metodę aby pobrać i wyświetlić dane w tym activity, wywalić to z onCreate (Brzydkie)
+        ImageView profileImage = findViewById(R.id.profile_image);
         Glide.with(this).load(Database.getUserPhoto()).into(profileImage);
         setTextViews();
     }
@@ -38,7 +39,7 @@ public class Profile extends AppCompatActivity {
         profile_birth.setText(String.valueOf(Database.getUserProfile().get("birth")));
         profile_mail.setText(String.valueOf(Database.getUserProfile().get("mail")));
         profile_sex.setText(String.valueOf(Database.getUserProfile().get("sex")));
-        profile_phone_number.setText(String.valueOf(Database.getUserProfile().get("surname")));
+        profile_phone_number.setText(String.valueOf(Database.getUserProfile().get("phoneNumber")));
         profile_organizer.setText(String.valueOf(Database.getGroupProfile().get("organizer")));
         profile_accomodation.setText(String.valueOf(Database.getUserProfile().get("accomodation")));
         profile_nationality.setText(String.valueOf(Database.getUserProfile().get("nationality")));

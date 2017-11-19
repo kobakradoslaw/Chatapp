@@ -3,6 +3,7 @@
     package="com.example.radoslaw.chatapp">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:allowBackup="true"
@@ -43,7 +44,13 @@
 
         <activity
             android:name=".MapsActivity"
-            android:label="@string/title_activity_maps"></activity>
+            android:label="@string/title_activity_maps" />
+        <activity
+            android:name=".MapEmbassy"
+            android:label="@string/title_activity_map_embassy" />
+        <activity
+            android:name=".MapsOrganizer"
+            android:label="@string/title_activity_maps_organizer"></activity>
     </application>
 
 </manifest>

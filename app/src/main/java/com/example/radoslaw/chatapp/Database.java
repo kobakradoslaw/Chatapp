@@ -113,6 +113,7 @@ public class Database {
 
                     }
                 });
+
     }
 
     public static void getGroupData(){
@@ -135,7 +136,7 @@ public class Database {
                 });
     }
 
-    public static void joinGroup(String key){ //TODO: pobieranie danych z grupy po czym??
+    public static void joinGroup(String key){
         if(key.endsWith("guide")) {
             db.collection("groups")
                     .whereEqualTo("guidekey", key)
@@ -176,7 +177,6 @@ public class Database {
                                     Log.d(TAG, document.getId() + " => " + document.getData());
                                     groupDocumentID = document.getId();
                                     groupProfile.putAll(document.getData());
-
                                 }
                                 sendGroupToUserProfile();
                                 Map<String, Object> data = new HashMap<>();
