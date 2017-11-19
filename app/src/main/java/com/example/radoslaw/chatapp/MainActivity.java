@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -95,7 +96,8 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             //Database.testPushGroup();
-            Toast.makeText(this, FirebaseAuth.getInstance().getCurrentUser().toString(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, FirebaseAuth.getInstance().getCurrentUser().toString(), Toast.LENGTH_SHORT).show();
+            Database.sendMessageToDatabase("hahahahahah");
             return true;
         } else if (id == R.id.action_log_out) {
             AuthUI.getInstance()
@@ -124,8 +126,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_chat) {
             startActivity(new Intent(getApplicationContext(), Chat.class));
         } else if (id == R.id.nav_items) {
-            //Database.pushUser();
-           // Database.assignUser();
+            startActivity(new Intent(getApplicationContext(), Materials.class));
         } else if (id == R.id.nav_contact) {
             startActivity(new Intent(getApplicationContext(), Contact.class));
         } else if (id == R.id.nav_settings) {
@@ -163,7 +164,6 @@ public class MainActivity extends AppCompatActivity
 
     public void getlocation() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
             //   public void onRequestPermissionsResult(int requestCode, String[] permissions,

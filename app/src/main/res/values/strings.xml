@@ -14,4 +14,6 @@
     <string name="tab_text_2">Grupowe</string>
     <string name="todo">"TESTOWE zdjecie </string>
     <string name="title_activity_maps">Map</string>
+    <string name="title_activity_map_embassy">EmbassyMap</string>
+    <string name="title_activity_maps_organizer">organizerMap</string>
 </resources>

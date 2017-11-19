@@ -1,8 +1,11 @@
 package com.example.radoslaw.chatapp;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -28,9 +31,27 @@ public class Find extends AppCompatActivity {
         setContentView(R.layout.activity_find);
     }
 
-    public void mapbuttonOnClick(View v ){
+    public void mapButtonOnClick(View v) {
         startActivity(new Intent(getApplicationContext(), MapsActivity.class));
     }
+
+    public void phoneButtonOnClick(View v) {
+        Intent callIntent = new Intent(Intent.ACTION_CALL);
+        callIntent.setData(Uri.parse("tel:"+String.valueOf(Database.getFindUserProfile().get("phoneNumber"))));
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        startActivity(callIntent);
+    }
+
+
+
     public void searchButtonOnClick(View v ){
         EditText et = findViewById(R.id.efindemail);
         findUserbyEmail(String.valueOf(et.getText()), v);
@@ -93,9 +114,11 @@ public class Find extends AppCompatActivity {
 
         TextView tfindLatitude = findViewById(R.id.tfindLatitude);
         TextView tfindLongitude = findViewById(R.id.tfindLongitude);
-        GeoPoint point = (GeoPoint) Database.getFindUserProfile().get("location");
-        tfindLatitude.setText(String.valueOf(point.getLatitude()));
-        tfindLongitude.setText(String.valueOf(point.getLongitude()));
+        if(Database.getFindUserProfile().get("location")!=null) {
+            GeoPoint point = (GeoPoint) Database.getFindUserProfile().get("location");
+            tfindLatitude.setText(String.valueOf(point.getLatitude()));
+            tfindLongitude.setText(String.valueOf(point.getLongitude()));
+        }
         tfindstatus.setText("Znaleziono");
         View v = getWindow().getDecorView().findViewById(android.R.id.content);
         v.invalidate();

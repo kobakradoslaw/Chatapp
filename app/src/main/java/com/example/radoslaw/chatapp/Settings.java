@@ -24,11 +24,18 @@ public class Settings extends AppCompatActivity {
     public void joinButtonOnClick(View v ){
         EditText et = findViewById(R.id.eGroupKey);
         Database.joinGroup(String.valueOf(et.getText()));
+        refresh();
     }
 
     public void leaveButtonOnClick(View v ){
         Database.leaveGroup();
+        refresh();
     }
+    private void refresh(){
+        View v = getWindow().getDecorView().findViewById(android.R.id.content);
+        v.invalidate();
+    }
+
 }
 
 

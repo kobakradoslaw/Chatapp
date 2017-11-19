@@ -2,8 +2,10 @@ package com.example.radoslaw.chatapp;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -23,6 +25,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
 import java.sql.Struct;
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,8 +43,10 @@ public class Database {
 
     private static Map<String,Object> findUserProfile = new HashMap<>();
     private static Map<String,Object> groupProfile = new HashMap<>();
+    private static Map<String,Object> guideProfile = new HashMap<>();
 
     private static String findUserUid;
+    private static String findGuideUid;
 
     private static String userDocumentID;
     private static String groupDocumentID;
@@ -106,6 +112,7 @@ public class Database {
                                 assignUserUID();
                                 getlocation(loc);
                                 getGroupData();
+                                findGuideProfile();
                             }
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -113,6 +120,7 @@ public class Database {
 
                     }
                 });
+
     }
 
     public static void getGroupData(){
@@ -135,7 +143,7 @@ public class Database {
                 });
     }
 
-    public static void joinGroup(String key){ //TODO: pobieranie danych z grupy po czym??
+    public static void joinGroup(String key){
         if(key.endsWith("guide")) {
             db.collection("groups")
                     .whereEqualTo("guidekey", key)
@@ -176,7 +184,6 @@ public class Database {
                                     Log.d(TAG, document.getId() + " => " + document.getData());
                                     groupDocumentID = document.getId();
                                     groupProfile.putAll(document.getData());
-
                                 }
                                 sendGroupToUserProfile();
                                 Map<String, Object> data = new HashMap<>();
@@ -250,6 +257,69 @@ public class Database {
         }
     }
 
+    public static Map<String, Object> getGuideProfile() {
+        return guideProfile;
+    }
+
+    public static void setGuideProfile(Map<String, Object> guideProfile) {
+        Database.guideProfile = guideProfile;
+    }
+
+    public  static void findGuideProfile(){
+        db.collection("groups").document(String.valueOf(getUserProfile().get("groupid"))).collection("guides")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                findGuideUid = (String.valueOf(document.getData().get("uid")));
+                                Log.d("finduser", String.valueOf(document.getData()));
+                            }
+
+                            db.collection("users")
+                                    .whereEqualTo("uid",findGuideUid)
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            Log.d("FindActivity", findGuideUid);
+                                            if (task.isSuccessful()) {
+                                                for (DocumentSnapshot document : task.getResult()) {
+                                                    Log.d("FindActivity", document.getId() + " => " + document.getData());
+                                                    setGuideProfile(document.getData());
+                                                    Log.d("Current guide profile", String.valueOf(getGuideProfile()));
+                                                }
+                                            } else {
+                                                Log.d("FindActivity", "Error getting documents: ", task.getException());
+                                            }
+                                        }
+                                    });
+                        } else {
+                            Log.d("FindActivity", "Error getting documents: ", task.getException());
+
+                        }
+                    }
+                });
+    }
+
+
+    public static void sendItemInfoToDatabase(String name, String uri){
+                        Map<String, Object> data = new HashMap<>();
+                        data.put("uid",useruid);
+                        data.put("filename",name);
+                        data.put("uri",uri);
+                        db.document("groups/"+groupDocumentID+"/items/"+name).set(data);
+}
+
+    public static void sendMessageToDatabase(String text){
+        Map<String, Object> data = new HashMap<>();
+        data.put("uid",useruid);
+        data.put("text",text);
+        data.put("time", Calendar.getInstance().getTime());
+        db.collection("groups/"+groupDocumentID+"/messages/").add(data);
+
+    }
 
     public static String getUserDisplayName() {
         return userDisplayName;
