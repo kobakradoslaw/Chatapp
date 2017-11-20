@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.action_settings) {
             //Database.testPushGroup();
             //Toast.makeText(this, FirebaseAuth.getInstance().getCurrentUser().toString(), Toast.LENGTH_SHORT).show();
-            Database.sendMessageToDatabase("hahahahahah");
+            //Database.getItemInfoFromDatabase();
             return true;
         } else if (id == R.id.action_log_out) {
             AuthUI.getInstance()

@@ -1,6 +1,7 @@
 package com.example.radoslaw.chatapp;
 
 import android.net.Uri;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.text.format.Time;
 import android.util.Log;
@@ -23,7 +24,12 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Struct;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -37,6 +43,9 @@ import java.util.Map;
 public class Database {
 
     private static final String TAG = "Baza danych TEST" ;
+    private static FirebaseStorage storage = FirebaseStorage.getInstance();
+    private static StorageReference storageRef = storage.getReference();
+
     public static FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private static Map<String,Object> userProfile = new HashMap<>();
@@ -44,6 +53,16 @@ public class Database {
     private static Map<String,Object> findUserProfile = new HashMap<>();
     private static Map<String,Object> groupProfile = new HashMap<>();
     private static Map<String,Object> guideProfile = new HashMap<>();
+
+    public static Map<String, Object> getItemMap() {
+        return itemMap;
+    }
+
+    public static void setItemMap(Map<String, Object> itemMap) {
+        Database.itemMap = itemMap;
+    }
+
+    private static Map<String,Object> itemMap = new HashMap<>();
 
     private static String findUserUid;
     private static String findGuideUid;
@@ -113,6 +132,7 @@ public class Database {
                                 getlocation(loc);
                                 getGroupData();
                                 findGuideProfile();
+                                getItemInfoFromDatabase();
                             }
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -305,12 +325,45 @@ public class Database {
 
 
     public static void sendItemInfoToDatabase(String name, String uri){
-                        Map<String, Object> data = new HashMap<>();
-                        data.put("uid",useruid);
-                        data.put("filename",name);
-                        data.put("uri",uri);
-                        db.document("groups/"+groupDocumentID+"/items/"+name).set(data);
+        Map<String, Object> data = new HashMap<>();
+        data.put("uid",useruid);
+        data.put("filename",name);
+        data.put("uri",uri);
+        db.document("groups/"+groupDocumentID+"/items/"+name).set(data);
 }
+
+    private static void getItemInfoFromDatabase(){
+        db.collection("groups").document(String.valueOf(getUserProfile().get("groupid"))).collection("items")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                          for(DocumentSnapshot document : task.getResult()){
+                              Log.d(TAG, document.getId() + " => " + document.getData());
+                              itemMap.put(document.getId(),document.getData());
+                          }
+                            //Log.d(TAG, String.valueOf(((Map) itemMap.get("primary:microlog.txt")).get("Uri")));
+                        } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
+                    }
+                    }
+                });
+    }
+
+    public static void downloadFromUri(String uri, String name){
+        File localfilea = null;
+        localfilea = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),name);
+        StorageReference itemRef = FirebaseStorage.getInstance().getReferenceFromUrl(uri);
+        itemRef.getFile(localfilea).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                Log.d("Pobieranie","zakończone?");
+            }
+        });
+
+
+    }
 
     public static void sendMessageToDatabase(String text){
         Map<String, Object> data = new HashMap<>();

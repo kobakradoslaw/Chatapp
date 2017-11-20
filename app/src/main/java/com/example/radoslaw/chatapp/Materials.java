@@ -3,11 +3,17 @@ package com.example.radoslaw.chatapp;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -18,7 +24,12 @@ import com.google.firebase.storage.UploadTask;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Materials extends AppCompatActivity {
     private static final String TAG = "Materials" ;
@@ -26,10 +37,36 @@ public class Materials extends AppCompatActivity {
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReference();
 
+    String[] mobileArray = {"Android","IPhone","WindowsMobile","Blackberry",
+            "WebOS","Ubuntu","Windows7","Max OS X"};
+    ArrayList al = new ArrayList();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_materials);
+        //Log.d(TAG, String.valueOf(Database.getItemMap().keySet()));
+
+        for(String name: Database.getItemMap().keySet()){
+            al.add(name);
+            Log.d(TAG, name);
+            Log.d(TAG, String.valueOf(Database.getItemMap().get(name)));
+            Log.d(TAG, String.valueOf(((Map)Database.getItemMap().get(name)).get("uid")));
+            //Uri a = (Uri.from String.valueOf(((Map)Database.getItemMap().get(name)).get("uri")));
+        }
+        ArrayAdapter adapter = new ArrayAdapter<String>(this,R.layout.fragment_material,al);
+        ListView listView = (ListView) findViewById(R.id.material_list_view);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String item = ((TextView)view).getText().toString();
+                Log.d(TAG, String.valueOf(((Map)Database.getItemMap().get(item)).get("uri")));
+                Database.downloadFromUri(String.valueOf(((Map)Database.getItemMap().get(item)).get("uri")),String.valueOf(((Map)Database.getItemMap().get(item)).get("filename")));
+                Toast.makeText(getBaseContext(), item, Toast.LENGTH_LONG).show();
+            }
+        });
 
     }
 
