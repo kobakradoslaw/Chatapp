@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 public class Contact extends AppCompatActivity {
 
@@ -16,6 +17,16 @@ public class Contact extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
+        TextView guide_name = findViewById(R.id.textViewGuideName);
+        guide_name.setText(String.valueOf(Database.getGuideProfile().get("name")));
+        TextView rezident_name = findViewById(R.id.textViewRezidentName);
+        rezident_name.setText(String.valueOf(Database.getGroupProfile().get("rezident")));
+        TextView organizer = findViewById(R.id.textViewOrganizer);
+        organizer.setText(String.valueOf(Database.getGroupProfile().get("organizer")));
+        TextView embassy = findViewById(R.id.textViewOrganizer);
+        embassy.setText(String.valueOf(Database.getGroupProfile().get("embassy")));
+
+
     }
 
     public void embassyMapButtonOnClick(View v) {

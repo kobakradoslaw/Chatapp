@@ -63,7 +63,7 @@ public class Materials extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String item = ((TextView)view).getText().toString();
                 Log.d(TAG, String.valueOf(((Map)Database.getItemMap().get(item)).get("uri")));
-                Database.downloadFromUri(String.valueOf(((Map)Database.getItemMap().get(item)).get("uri")),String.valueOf(((Map)Database.getItemMap().get(item)).get("filename")));
+                Database.downloadFromUri(String.valueOf(((Map)Database.getItemMap().get(item)).get("uri")),String.valueOf(((Map)Database.getItemMap().get(item)).get("filename")),getApplicationContext());
                 Toast.makeText(getBaseContext(), item, Toast.LENGTH_LONG).show();
             }
         });

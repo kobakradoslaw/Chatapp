@@ -59,10 +59,10 @@
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/imageView7"
-        app:layout_constraintTop_toBottomOf="@+id/textView35" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewRezidentName" />
 
     <TextView
-        android:id="@+id/textView25"
+        android:id="@+id/textViewOrganizer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -71,7 +71,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView24" />
 
     <TextView
-        android:id="@+id/textView35"
+        android:id="@+id/textViewRezidentName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -124,7 +124,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView11"
+        android:id="@+id/textViewGuideName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -197,10 +197,10 @@
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/imageView10"
-        app:layout_constraintTop_toTopOf="@+id/textView25" />
+        app:layout_constraintTop_toTopOf="@+id/textViewOrganizer" />
 
     <TextView
-        android:id="@+id/textView37"
+        android:id="@+id/textViewEmbassy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"

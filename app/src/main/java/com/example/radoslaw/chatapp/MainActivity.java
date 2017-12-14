@@ -2,6 +2,7 @@ package com.example.radoslaw.chatapp;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -34,6 +37,8 @@ import com.google.firebase.firestore.GeoPoint;
 
 import java.util.Arrays;
 
+import static com.example.radoslaw.chatapp.Database.*;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -44,12 +49,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        logIn();
-        Database.updateCurrentUser();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        Database.assignUser();
-        getlocation();
-        Database.getGroupData();
+        init();
         // Database.pushUser();//Wysłanie testowego użytkownika do bazy danych
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -57,19 +58,38 @@ public class MainActivity extends AppCompatActivity
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+
+                super.onDrawerOpened(drawerView);
+                NavigationView navigationView = findViewById(R.id.nav_view);
+                View hView = navigationView.getHeaderView(0);
+                if (FirebaseAuth.getInstance().getCurrentUser() != null) { //TODO: Dodać odświeżanie przed wyświetleniem
+                    TextView nav_user_name = hView.findViewById(R.id.nav_user_name);
+                    nav_user_name.setText(getUserDisplayName());
+                    TextView nav_user_email = hView.findViewById(R.id.nav_user_email);
+                    nav_user_email.setText(getUserEmail());
+                    ImageView nav_image = hView.findViewById(R.id.nav_user_image);
+                    Glide.with(getApplicationContext()).load(getUserPhoto()).into(nav_image);
+                }
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         View hView = navigationView.getHeaderView(0);
         if (FirebaseAuth.getInstance().getCurrentUser() != null) { //TODO: Dodać odświeżanie przed wyświetleniem
             TextView nav_user_name = hView.findViewById(R.id.nav_user_name);
-            nav_user_name.setText(Database.getUserDisplayName());
+            nav_user_name.setText(getUserDisplayName());
             TextView nav_user_email = hView.findViewById(R.id.nav_user_email);
-            nav_user_email.setText(Database.getUserEmail());
+            nav_user_email.setText(getUserEmail());
             ImageView nav_image = hView.findViewById(R.id.nav_user_image);
-            Glide.with(this).load(Database.getUserPhoto()).into(nav_image);
+            Glide.with(this).load(getUserPhoto()).into(nav_image);
         }
         navigationView.setNavigationItemSelectedListener(this);
     }
@@ -95,6 +115,8 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Database.pushUser();
+            Database.testPushGroup();
             //Database.testPushGroup();
             //Toast.makeText(this, FirebaseAuth.getInstance().getCurrentUser().toString(), Toast.LENGTH_SHORT).show();
             //Database.getItemInfoFromDatabase();
@@ -132,7 +154,11 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_settings) {
             startActivity(new Intent(getApplicationContext(), Settings.class));
         } else if (id == R.id.nav_find_user) {
-            startActivity(new Intent(getApplicationContext(), Find.class));
+            if(null !=(Database.getUserProfile().get("guide"))) {
+                if((Boolean) Database.getUserProfile().get("guide"))
+                startActivity(new Intent(getApplicationContext(), Find.class));
+            }
+            else   Toast.makeText(getBaseContext(), "Ta funkcjonalność jest dostępna tylko dla przewodnika", Toast.LENGTH_LONG).show();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -149,7 +175,7 @@ public class MainActivity extends AppCompatActivity
                             .createSignInIntentBuilder()
                             .setIsSmartLockEnabled(false)
                             .setAvailableProviders(
-                                    Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
+                                    Arrays.asList(
                                             new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()
                                     ))
                             .build(),
@@ -159,6 +185,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onStart() {
+
         super.onStart();
     }
 
@@ -176,13 +203,33 @@ public class MainActivity extends AppCompatActivity
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
+
                       // Database.getlocation(location);
-                        Database.loc = new GeoPoint(location.getLatitude(),location.getLongitude());
+                       // loc = new GeoPoint(location.getLatitude(),location.getLongitude());
                         // Got last known location. In some rare situations this can be null.
                         if (location != null) {
+                            Log.d("aa", "__________________________________"+loc);
+                            Database.loc = new GeoPoint(location.getLatitude(),location.getLongitude());
                             // Logic to handle location object
                         }
                     }
                 });
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        init();
+        if(null != Database.loc){
+            Database.getlocation(Database.loc);
+        }
+    }
+
+    public void init() {
+        logIn();
+        updateCurrentUser();
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        assignUser();
+        getlocation();
+        getGroupData();
     }
 }

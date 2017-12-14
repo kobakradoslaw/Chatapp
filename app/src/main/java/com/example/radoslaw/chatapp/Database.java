@@ -1,5 +1,7 @@
 package com.example.radoslaw.chatapp;
 
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -50,6 +52,8 @@ public class Database {
 
     private static Map<String,Object> userProfile = new HashMap<>();
 
+    private static Map<String,Object> testUserProfile = new HashMap<>();
+
     private static Map<String,Object> findUserProfile = new HashMap<>();
     private static Map<String,Object> groupProfile = new HashMap<>();
     private static Map<String,Object> guideProfile = new HashMap<>();
@@ -80,18 +84,18 @@ public class Database {
 
 
     public static void testPushUser(){
-        userProfile.put("name","Radosław");
-        userProfile.put("surname","JJAJAJAJ");
-        userProfile.put("sex","Male");
-        userProfile.put("birth",1995);
-        userProfile.put("nationality","Polish");
-        userProfile.put("phoneNumber",694177999);
-        userProfile.put("mail","radek90gg@gmail.com");
+        testUserProfile.put("name","Ukasz");
+        testUserProfile.put("surname","TestowyUkasz");
+        testUserProfile.put("sex","Male");
+        testUserProfile.put("birth",2222);
+        testUserProfile.put("nationality","Polish");
+        testUserProfile.put("phoneNumber",783120690);
+        testUserProfile.put("mail","luk.kieron@gmail.pl");
     }
 
     public static void pushUser(){
         testPushUser();
-        db.collection("users").add(userProfile).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+        db.collection("users").add(testUserProfile).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
             public void onSuccess(DocumentReference documentReference) {
                 Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
@@ -105,15 +109,26 @@ public class Database {
         });
     }
 
-    public static void testPushGroup(){
-        String documentname = "scoiatael";
+    public static Map<String,Object> testPushGroup(){
+        String documentname = "Kopisto Group";
+        GeoPoint embas = new GeoPoint(50.4424175,30.4838007);
+        GeoPoint ombas = new GeoPoint(50.4745103,18.8243375);
         Map<String, Object> data = new HashMap<>();
-        data.put("name", "Whatever");
-        data.put("organizer", "Scoia Inc.");
-        data.put("userkey", "sanki123");
-        data.put("guidekey","root");
+        data.put("name", "Kopisto Group");
+        data.put("organizer", "RainbowTours.");
+        data.put("userkey", "radek");
+        data.put("guidekey","toorguide");
         data.put("groupid",documentname);
+        data.put("embassy","Kijów");
+        data.put("embassyloc",embas);
+        data.put("embassyn","694177996");
+        data.put("organizer","RainbowTours");
+        data.put("organizerloc",ombas);
+        data.put("organizern","694177996");
+        data.put("rezident","Mirosław");
+        data.put("rezidentn","694177996");
         db.collection("groups").document(documentname).set(data, SetOptions.merge());
+        return data;
     }
 
     public static void assignUser(){
@@ -128,19 +143,19 @@ public class Database {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
                                 userDocumentID = document.getId();
                                 userProfile.putAll(document.getData());
-                                assignUserUID();
-                                getlocation(loc);
-                                getGroupData();
-                                findGuideProfile();
-                                getItemInfoFromDatabase();
                             }
+
+                            assignUserUID();
+                            getlocation(loc);
+                            getGroupData();
+                            findGuideProfile();
+                            getItemInfoFromDatabase();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
-
                     }
                 });
-
+        //if(null==userDocumentID) Toast.makeText(this.getApplicationContext(),"Nie znaleziono profilu w bazie",Toast.LENGTH_LONG);
     }
 
     public static void getGroupData(){
@@ -178,7 +193,7 @@ public class Database {
                                     groupProfile.putAll(document.getData());
 
                                 }
-                                sendGroupToUserProfile();
+                                sendGroupToUserProfile(true);
                                 Map<String, Object> data = new HashMap<>();
                                 data.put("name",userProfile.get("name"));
                                 data.put("surname",userProfile.get("surname"));
@@ -205,7 +220,7 @@ public class Database {
                                     groupDocumentID = document.getId();
                                     groupProfile.putAll(document.getData());
                                 }
-                                sendGroupToUserProfile();
+                                sendGroupToUserProfile(false);
                                 Map<String, Object> data = new HashMap<>();
                                 data.put("name",userProfile.get("name"));
                                 data.put("surname",userProfile.get("surname"));
@@ -237,22 +252,32 @@ public class Database {
                         Log.w(TAG, "Error deleting document", e);
                     }
                 });
+
         Map<String,Object> updates = new HashMap<>();
         updates.put("groupid", FieldValue.delete());
         updates.put("groupname", FieldValue.delete());
+        updates.put("guide",FieldValue.delete());
         db.collection("users").document(userDocumentID).update(updates);
+        userProfile.remove("groupid");
+        userProfile.remove("groupname");
+        userProfile.remove("guide");
+        groupProfile.clear();
+        Log.w(TAG, "______________________________________"+String.valueOf(groupProfile));
+        //groupProfile.put("name","aaaaaa");
     }
 
     public static void assignUserUID(){
         Map<String, Object> data = new HashMap<>();
         data.put("uid", useruid);
+        if(null!=userDocumentID)
         db.collection("users").document(userDocumentID).set(data, SetOptions.merge());
     }
 
-    public static void sendGroupToUserProfile(){
+    public static void sendGroupToUserProfile(boolean guide){
         Map<String, Object> data = new HashMap<>();
         data.put("groupid", groupDocumentID);
         data.put("groupname", groupProfile.get("name"));
+        if(guide)data.put("guide",true);
         db.collection("users").document(userDocumentID).set(data, SetOptions.merge());
     }
 
@@ -261,6 +286,7 @@ public class Database {
         Map<String, GeoPoint> data = new HashMap<>();
         data.put("location", a);
         Log.d(TAG, "location =====>" + a);
+        if(null!=userDocumentID)
         db.collection("users").document(userDocumentID).set(data, SetOptions.merge());
     }
 
@@ -351,14 +377,22 @@ public class Database {
                 });
     }
 
-    public static void downloadFromUri(String uri, String name){
+    public static void downloadFromUri(final String uri, String name, final Context context){
         File localfilea = null;
         localfilea = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),name);
         StorageReference itemRef = FirebaseStorage.getInstance().getReferenceFromUrl(uri);
+        final File finalLocalfilea = localfilea;
         itemRef.getFile(localfilea).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                 Log.d("Pobieranie","zakończone?");
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                if (Uri.fromFile(finalLocalfilea).toString().contains(".pdf")) {
+                    intent.setDataAndType(Uri.fromFile(finalLocalfilea), "application/pdf");
+                }
+                intent.setDataAndType(Uri.fromFile(finalLocalfilea), "image/jpeg");
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
             }
         });
 
